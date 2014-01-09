@@ -50,38 +50,35 @@ end
 %% reading sparse files
 thr = 0.1;
 numcluster = 3;
-pre = 'G:\VanHateren\matlab\';
-N = 5;
-patch_temp = cell(N,1);
-for j = 1:N
-    TT = cell(400,1);
-    for i = 1+(j-1)*100:j*100
-        filename = strcat(pre,num2str(i),'_sparse.mat');
-        load(filename);
-        for k = 1:size(image_edgemap,1)
-            temp = image_edgemap{k};
-            temp = full(temp);
-            len = size(temp,1);
-            image_edgemap{k} = reshape(temp,[len,len,16]);
-        end
-        idx = i-(j-1)*100;
-        TT(((idx-1)*4+1):(idx*4)) = image_edgemap;
+pre = '/Users/Vincent/Documents/Research/Dataset/Van Hateren/matlab/';
+N = 500;
+clear patch;
+clear num
+
+for i = 1:N
+    filename = strcat(pre,num2str(i),'_sparse.mat');
+    load(filename);
+    for k = 1:size(image_edgemap,1)
+        temp = image_edgemap{k};
+        temp = full(temp);
+        len = size(temp,1);
+        image_edgemap{k} = reshape(temp,[len,len,16]);
     end
-    image_edgemap = TT;
-    clear TT;
-    patch_temp{j} = ComputePatchRRLL(image_edgemap,5000,thr);
+    patch_temp = ComputePatchRRLL(image_edgemap,40,thr);
+    num(i) = size(patch_temp,4);
+    if ndims(patch_temp) ==4
+        if i == 1
+            patch = patch_temp;
+        else
+            patch = cat(4,patch,patch_temp);
+        end
+    end
     clear image_edgemap
+    clear patch_temp;
 end
-
-clear patch
-patch = patch_temp{1};
-for j = 2:N
-    patch(:,:,:,end+1:end+size(patch_temp{j},4)) = patch_temp{j};
-end
-
-    
+  
 %% cal. patch
-embeddim = 200;
+embeddim = 400;
 prob = edgeprob(patch);
 probsort = sort(prob,'descend');
 probthr = probsort(embeddim+1);
