@@ -1,5 +1,5 @@
 %% Load data and compute layout
-load('~/matlab/fpack/matlabBGL/graphs/cores_example.mat')
+load('cores_example.mat')
 
 
 %% Just plot the graph, similar to gplot
